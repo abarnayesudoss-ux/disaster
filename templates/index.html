@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - E-Commerce Chatbot</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #eef3f9;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chatbot {
+            width: 95%;
+            max-width: 900px;
+            height: 90vh;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: #173b70;
+            color: white;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .logo {
+            font-size: 42px;
+        }
+
+        .header h1 {
+            font-size: 25px;
+        }
+
+        .header p {
+            margin-top: 5px;
+            color: #d5e6ff;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fbff;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 18px;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 15px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .bot-message .message-content {
+            background: #e4edf9;
+            color: #172b4d;
+            border-bottom-left-radius: 3px;
+        }
+
+        .user-message .message-content {
+            background: #1769e0;
+            color: white;
+            border-bottom-right-radius: 3px;
+        }
+
+        /* Quick Buttons */
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 5px 20px 15px;
+        }
+
+        .quick-buttons button {
+            padding: 10px 14px;
+            border: 1px solid #1769e0;
+            background: white;
+            color: #1769e0;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .quick-buttons button:hover {
+            background: #1769e0;
+            color: white;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background: white;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        #sendButton {
+            width: 52px;
+            border: none;
+            background: #1769e0;
+            color: white;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background: #0e4fae;
+        }
+
+        /* Product Cards */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .product {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #d9e4f2;
+            text-align: center;
+        }
+
+        .product .product-icon {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .product h3 {
+            font-size: 15px;
+            color: #173b70;
+            margin-bottom: 8px;
+        }
+
+        .product p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .product button {
+            border: none;
+            background: #1769e0;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .product button:hover {
+            background: #0e4fae;
+        }
+
+        .typing {
+            color: #777;
+            font-style: italic;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .chatbot {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .message-content {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chatbot">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">🛒</div>
+        <div>
+            <h1>ShopEase</h1>
+            <p>Your E-Commerce Shopping Assistant</p>
+        </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-area" id="chatArea">
+
+        <div class="message bot-message">
+            <div class="message-content">
+                Hello! 👋 Welcome to ShopEase.
+
+                I am your E-Commerce Assistant.
+
+                You can ask me about:
+                🛍️ Products
+                📦 Order Status
+                🚚 Delivery
+                💳 Payment
+                🔄 Returns
+
+                How can I help you today?
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Buttons -->
+    <div class="quick-buttons">
+        <button onclick="quickMessage('Show products')">
+            🛍️ Products
+        </button>
+
+        <button onclick="quickMessage('Track my order')">
+            📦 Track Order
+        </button>
+
+        <button onclick="quickMessage('Tell me about delivery')">
+            🚚 Delivery
+        </button>
+
+        <button onclick="quickMessage('What payment methods are available?')">
+            💳 Payment
+        </button>
+
+        <button onclick="quickMessage('How can I return a product?')">
+            🔄 Returns
+        </button>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Type your shopping question..."
+            onkeydown="handleKey(event)"
+        >
+
+        <button id="sendButton" onclick="sendMessage()">
+            ➤
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+    const chatArea = document.getElementById("chatArea");
+    const userInput = document.getElementById("userInput");
+
+    // Add message to chat
+    function addMessage(message, sender) {
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message " + sender + "-message";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+
+        contentDiv.textContent = message;
+
+        messageDiv.appendChild(contentDiv);
+        chatArea.appendChild(messageDiv);
+
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // Send message
+    function sendMessage() {
+
+        const message = userInput.value.trim();
+
+        if (message === "") {
+            return;
+        }
+
+        addMessage(message, "user");
+
+        userInput.value = "";
+
+        setTimeout(function() {
+            const reply = getBotReply(message);
+            addMessage(reply, "bot");
+        }, 500);
+    }
+
+    // Quick message
+    function quickMessage(message) {
+        userInput.value = message;
+        sendMessage();
+    }
+
+    // Enter key
+    function handleKey(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+
+    // E-Commerce chatbot response
+    function getBotReply(message) {
+
+        const text = message.toLowerCase();
+
+        if (
+            text.includes("hello") ||
+            text.includes("hi") ||
+            text.includes("vanakkam")
+        ) {
+            return "Hello! 👋 Welcome to ShopEase. How can I help you with your shopping today?";
+        }
+
+        if (
+            text.includes("product") ||
+            text.includes("products") ||
+            text.includes("shop") ||
+            text.includes("buy") ||
+            text.includes("mobile") ||
+            text.includes("laptop")
+        ) {
+            return "🛍️ We have many products available!\n\n📱 Mobiles\n💻 Laptops\n👕 Fashion\n🏠 Home Appliances\n🎧 Electronics\n\nPlease select a category or type the product name you are looking for.";
+        }
+
+        if (
+            text.includes("order") ||
+            text.includes("track") ||
+            text.includes("tracking")
+        ) {
+            return "📦 To track your order, please open the My Orders section and enter your order ID.\n\nExample: ORD12345\n\nThis demo does not connect to a real order database.";
+        }
+
+        if (
+            text.includes("delivery") ||
+            text.includes("shipping")
+        ) {
+            return "🚚 Delivery Information:\n\n• Standard Delivery: 3–7 working days\n• Express Delivery: 1–3 working days\n• Free shipping may be available for eligible orders.\n\nActual delivery time depends on your location and seller.";
+        }
+
+        if (
+            text.includes("payment") ||
+            text.includes("pay") ||
+            text.includes("upi") ||
+            text.includes("card")
+        ) {
+            return "💳 Available payment options may include:\n\n• UPI\n• Debit Card\n• Credit Card\n• Net Banking\n• Cash on Delivery\n\nPayment options depend on the order and seller.";
+        }
+
+        if (
+            text.includes("return") ||
+            text.includes("refund") ||
+            text.includes("exchange")
+        ) {
+            return "🔄 Return and Refund Information:\n\n1. Open My Orders.\n2. Select the product.\n3. Choose Return or Refund.\n4. Follow the instructions.\n\nReturn eligibility depends on the seller's policy.";
+        }
+
+        if (
+            text.includes("cancel") ||
+            text.includes("cancellation")
+        ) {
+            return "❌ To cancel an order, open My Orders and select the Cancel Order option if it is available.\n\nCancellation depends on the order status.";
+        }
+
+        if (
+            text.includes("cart") ||
+            text.includes("add")
+        ) {
+            return "🛒 You can add products to your cart and review them before checkout.\n\nIn this demo, the Add to Cart button is for demonstration only.";
+        }
+
+        if (
+            text.includes("help") ||
+            text.includes("support")
+        ) {
+            return "🤝 I can help you with:\n\n• Product information\n• Order tracking\n• Delivery\n• Payment\n• Returns and refunds\n• Shopping support";
+        }
+
+        return "Sorry, I can answer only E-Commerce-related questions. 🛍️\n\nPlease ask me about products, orders, delivery, payment, returns, or shopping.";
+    }
+
+</script>
+
+</body>
+</html>
